@@ -5,6 +5,7 @@ import SearchBar from "@/components/search-bar"
 import FilterSystem from "@/components/filter-system"
 import SortDropdown from "@/components/sort-dropdown"
 import { getPrompts } from "@/lib/prompts"
+import { Suspense } from "react"
 
 export default async function HomePage() {
   // Fetch prompts from Supabase
@@ -42,14 +43,16 @@ export default async function HomePage() {
         </div>
 
         {/* Search, Filter, and Sort Section */}
-        <div className="mb-8 space-y-4">
-          <SearchBar />
+        <Suspense fallback={<div className="mb-8 h-32" />}>
+          <div className="mb-8 space-y-4">
+            <SearchBar />
 
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <FilterSystem />
-            <SortDropdown />
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <FilterSystem />
+              <SortDropdown />
+            </div>
           </div>
-        </div>
+        </Suspense>
 
         {/* Prompt Cards Grid */}
         {prompts.length > 0 ? (
