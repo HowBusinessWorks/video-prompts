@@ -19,6 +19,8 @@ export async function getPrompts(
   page: number = 1
 ): Promise<PromptsResponse> {
   try {
+    console.log('[Server] Starting getPrompts with filters:', filters)
+
     let query = supabase
       .from('prompts')
       .select(
@@ -39,28 +41,26 @@ export async function getPrompts(
 
     // Filter by media type
     if (filters.mediaType) {
+      console.log('[Server] Adding media type filter:', filters.mediaType)
       query = query.eq('media_type', filters.mediaType)
     }
 
-    // Filter by model tags
-    if (filters.modelSlugs && filters.modelSlugs.length > 0) {
-      query = query.in('prompt_tags.tags.slug', filters.modelSlugs)
-    }
-
-    // Filter by category tags
-    if (filters.categorySlugs && filters.categorySlugs.length > 0) {
-      query = query.in('prompt_tags.tags.slug', filters.categorySlugs)
-    }
+    // Note: Filtering by tags through joins is complex in Supabase
+    // For now, we'll fetch all prompts and filter on the client side
+    // TODO: Implement proper tag filtering with RPC function
 
     // Search in title and prompt text
     if (filters.search) {
-      query = query.textSearch('prompt_text', filters.search)
+      console.log('[Server] Adding search filter:', filters.search)
+      query = query.or(`title.ilike.%${filters.search}%,prompt_text.ilike.%${filters.search}%`)
     }
 
     // Sorting
     if (filters.sort === 'most_viewed') {
+      console.log('[Server] Sorting by views')
       query = query.order('view_count', { ascending: false })
     } else {
+      console.log('[Server] Sorting by recent')
       // Default to recent
       query = query.order('created_at', { ascending: false })
     }
@@ -70,15 +70,18 @@ export async function getPrompts(
     const to = from + PROMPTS_PER_PAGE - 1
     query = query.range(from, to)
 
+    console.log('[Server] Executing query...')
     const { data, error } = await query
 
     if (error) {
-      console.error('Error fetching prompts:', error)
+      console.error('[Server] Error fetching prompts:', error)
       return { prompts: [], total: 0, hasMore: false }
     }
 
+    console.log('[Server] Query successful, got', data?.length, 'prompts')
+
     // Transform data to include tags properly
-    const prompts: PromptWithTags[] = (data || []).map((prompt: any) => ({
+    let prompts: PromptWithTags[] = (data || []).map((prompt: any) => ({
       ...prompt,
       tags: prompt.prompt_tags?.map((pt: any) => pt.tags).filter(Boolean) || [],
     }))
@@ -88,6 +91,23 @@ export async function getPrompts(
       delete prompt.prompt_tags
     })
 
+    // Client-side filtering for tags (temporary solution)
+    if (filters.modelSlugs && filters.modelSlugs.length > 0) {
+      console.log('[Server] Filtering by models:', filters.modelSlugs)
+      prompts = prompts.filter(prompt =>
+        prompt.tags.some(tag => filters.modelSlugs!.includes(tag.slug))
+      )
+    }
+
+    if (filters.categorySlugs && filters.categorySlugs.length > 0) {
+      console.log('[Server] Filtering by categories:', filters.categorySlugs)
+      prompts = prompts.filter(prompt =>
+        prompt.tags.some(tag => filters.categorySlugs!.includes(tag.slug))
+      )
+    }
+
+    console.log('[Server] After filtering, returning', prompts.length, 'prompts')
+
     const hasMore = prompts.length === PROMPTS_PER_PAGE
 
     return {
@@ -96,7 +116,7 @@ export async function getPrompts(
       hasMore,
     }
   } catch (error) {
-    console.error('Unexpected error fetching prompts:', error)
+    console.error('[Server] Unexpected error fetching prompts:', error)
     return { prompts: [], total: 0, hasMore: false }
   }
 }

@@ -2,8 +2,23 @@
 
 import { Button } from "@/components/ui/button"
 import { Filter, Image, Video } from "lucide-react"
+import type { MediaType } from "@/types/database"
 
-export default function FilterSystem() {
+interface FilterSystemProps {
+  mediaType: MediaType | null
+  selectedModels: string[]
+  selectedCategories: string[]
+  onMediaTypeChange: (type: MediaType | null) => void
+  onToggleModel: (model: string) => void
+  onToggleCategory: (category: string) => void
+}
+
+export default function FilterSystem({
+  mediaType,
+  selectedModels,
+  onMediaTypeChange,
+  onToggleModel,
+}: FilterSystemProps) {
   return (
     <div className="flex flex-wrap gap-2 items-center">
       <div className="flex items-center gap-2 text-sm font-bold">
@@ -15,7 +30,10 @@ export default function FilterSystem() {
       <Button
         variant="outline"
         size="sm"
-        className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
+        onClick={() => onMediaTypeChange(mediaType === "image" ? null : "image")}
+        className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
+          mediaType === "image" ? "bg-blue-500 text-white" : ""
+        }`}
       >
         <Image className="h-4 w-4 mr-1" />
         Image
@@ -23,7 +41,10 @@ export default function FilterSystem() {
       <Button
         variant="outline"
         size="sm"
-        className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
+        onClick={() => onMediaTypeChange(mediaType === "video" ? null : "video")}
+        className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
+          mediaType === "video" ? "bg-purple-500 text-white" : ""
+        }`}
       >
         <Video className="h-4 w-4 mr-1" />
         Video
@@ -35,28 +56,40 @@ export default function FilterSystem() {
       <Button
         variant="outline"
         size="sm"
-        className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
+        onClick={() => onToggleModel("midjourney")}
+        className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
+          selectedModels.includes("midjourney") ? "bg-black text-white" : ""
+        }`}
       >
         Midjourney
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
+        onClick={() => onToggleModel("sora")}
+        className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
+          selectedModels.includes("sora") ? "bg-black text-white" : ""
+        }`}
       >
         Sora
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
+        onClick={() => onToggleModel("dall-e")}
+        className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
+          selectedModels.includes("dall-e") ? "bg-black text-white" : ""
+        }`}
       >
         DALL-E
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
+        onClick={() => onToggleModel("veo")}
+        className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
+          selectedModels.includes("veo") ? "bg-black text-white" : ""
+        }`}
       >
         Veo
       </Button>

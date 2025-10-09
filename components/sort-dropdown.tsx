@@ -8,12 +8,18 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ArrowUpDown } from "lucide-react"
+import type { SortOption } from "@/types/database"
 
-export default function SortDropdown() {
+interface SortDropdownProps {
+  value: SortOption
+  onChange: (value: SortOption) => void
+}
+
+export default function SortDropdown({ value, onChange }: SortDropdownProps) {
   return (
     <div className="flex items-center gap-2">
       <ArrowUpDown className="h-4 w-4" />
-      <Select defaultValue="recent">
+      <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="w-[180px] border-2 border-black rounded-lg font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
