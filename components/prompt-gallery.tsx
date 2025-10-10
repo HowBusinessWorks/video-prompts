@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useFilters } from '@/hooks/use-filters'
-import { getPrompts } from '@/lib/prompts'
-import type { PromptWithTags } from '@/types/database'
+import { getPrompts, getTags } from '@/lib/prompts'
+import type { PromptWithTags, Tag } from '@/types/database'
 import PromptCard from './prompt-card'
 import SearchBar from './search-bar'
 import FilterSystem from './filter-system'
@@ -12,6 +12,8 @@ import SortDropdown from './sort-dropdown'
 export default function PromptGallery() {
   const filters = useFilters()
   const [prompts, setPrompts] = useState<PromptWithTags[]>([])
+  const [availableModels, setAvailableModels] = useState<Tag[]>([])
+  const [availableCategories, setAvailableCategories] = useState<Tag[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchPrompts = useCallback(async () => {
@@ -40,6 +42,16 @@ export default function PromptGallery() {
     }
   }, [filters.search, filters.mediaType, filters.models.join(','), filters.categories.join(','), filters.sort])
 
+  // Fetch tags on mount
+  useEffect(() => {
+    const fetchTags = async () => {
+      const { models, categories } = await getTags()
+      setAvailableModels(models)
+      setAvailableCategories(categories)
+    }
+    fetchTags()
+  }, [])
+
   useEffect(() => {
     fetchPrompts()
   }, [fetchPrompts])
@@ -65,9 +77,12 @@ export default function PromptGallery() {
             mediaType={filters.mediaType}
             selectedModels={filters.models}
             selectedCategories={filters.categories}
+            availableModels={availableModels}
+            availableCategories={availableCategories}
             onMediaTypeChange={filters.setMediaType}
             onToggleModel={filters.toggleModel}
             onToggleCategory={filters.toggleCategory}
+            onClearAll={filters.clearFilters}
           />
           <SortDropdown value={filters.sort} onChange={filters.setSort} />
         </div>
