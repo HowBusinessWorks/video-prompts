@@ -60,7 +60,6 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
       const success = await incrementPromptView(prompt.id, sessionId)
       if (success) {
         setViewTracked(true)
-        console.log('View tracked for prompt:', prompt.id)
       }
     }, 2000) // Wait 2 seconds before tracking
 
