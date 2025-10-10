@@ -36,8 +36,8 @@ export default function FilterSystem({
   onClearAll,
 }: FilterSystemProps) {
   return (
-    <div className="flex flex-wrap gap-3 items-center">
-      <div className="flex items-center gap-2 text-sm font-bold">
+    <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
+      <div className="hidden sm:flex items-center gap-2 text-sm font-bold">
         <Filter className="h-4 w-4" />
         <span>Filter:</span>
       </div>
@@ -67,7 +67,7 @@ export default function FilterSystem({
       </Button>
 
       {/* Divider */}
-      <div className="h-6 w-px bg-gray-300" />
+      <div className="hidden sm:block h-6 w-px bg-gray-300" />
 
       {/* AI Model Dropdown */}
       <DropdownMenu>
@@ -75,9 +75,10 @@ export default function FilterSystem({
           <Button
             variant="outline"
             size="sm"
-            className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
+            className="rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all text-xs sm:text-sm"
           >
-            AI Model
+            <span className="hidden sm:inline">AI Model</span>
+            <span className="sm:hidden">Model</span>
             {selectedModels.length > 0 && (
               <span className="ml-2 px-2 py-0.5 bg-black text-white rounded-full text-xs">
                 {selectedModels.length}
@@ -155,9 +156,10 @@ export default function FilterSystem({
           variant="outline"
           size="sm"
           onClick={onClearAll}
-          className="rounded-lg border-2 border-red-500 text-red-500 font-bold hover:bg-red-50"
+          className="rounded-lg border-2 border-red-500 text-red-500 font-bold hover:bg-red-50 text-xs sm:text-sm"
         >
-          Clear All
+          <span className="hidden sm:inline">Clear All</span>
+          <span className="sm:hidden">Clear</span>
         </Button>
       )}
     </div>

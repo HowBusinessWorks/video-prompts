@@ -5,6 +5,7 @@ import { useFilters } from '@/hooks/use-filters'
 import { getPrompts, getTags } from '@/lib/prompts'
 import type { PromptWithTags, Tag } from '@/types/database'
 import PromptCard from './prompt-card'
+import PromptCardSkeleton from './prompt-card-skeleton'
 import SearchBar from './search-bar'
 import FilterSystem from './filter-system'
 import SortDropdown from './sort-dropdown'
@@ -90,9 +91,10 @@ export default function PromptGallery() {
 
       {/* Prompt Cards Grid */}
       {loading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-black border-t-transparent"></div>
-          <p className="mt-4 text-lg font-bold">Loading prompts...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <PromptCardSkeleton key={i} />
+          ))}
         </div>
       ) : prompts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -101,14 +103,23 @@ export default function PromptGallery() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-xl text-gray-600">No prompts found. Try adjusting your filters!</p>
-          <button
-            onClick={filters.clearFilters}
-            className="mt-4 px-6 py-2 bg-black text-white rounded-lg font-bold border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all"
-          >
-            Clear Filters
-          </button>
+        <div className="text-center py-20 px-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="max-w-md mx-auto">
+            <div className="mb-6 text-6xl">🔍</div>
+            <h3 className="text-2xl font-black mb-3">No Prompts Found</h3>
+            <p className="text-gray-600 mb-6">
+              {filters.search
+                ? `No results for "${filters.search}". Try different keywords or clear filters.`
+                : "Try adjusting your filters or search terms to find what you're looking for."
+              }
+            </p>
+            <button
+              onClick={filters.clearFilters}
+              className="px-8 py-3 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl font-bold border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300"
+            >
+              Clear All Filters
+            </button>
+          </div>
         </div>
       )}
     </>

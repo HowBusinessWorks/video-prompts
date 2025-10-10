@@ -28,16 +28,16 @@ export default function PromptCard({ prompt }: PromptCardProps) {
     <>
       <Card
         onClick={() => setIsModalOpen(true)}
-        className="border-4 border-black rounded-xl overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:translate-y-[-4px] transition-transform h-full flex flex-col"
+        className="group border-4 border-black rounded-xl overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 ease-out h-full flex flex-col animate-in fade-in slide-in-from-bottom-4"
       >
         {/* Thumbnail with gradient overlay */}
-        <div className={`relative h-48 ${gradientColor}`}>
+        <div className={`relative h-48 ${gradientColor} overflow-hidden`}>
           {prompt.thumbnail_url && (
             <Image
               src={prompt.thumbnail_url}
               alt={prompt.title}
               fill
-              className="object-cover mix-blend-overlay opacity-80"
+              className="object-cover mix-blend-overlay opacity-80 group-hover:scale-110 transition-transform duration-500 ease-out"
             />
           )}
           {/* Media type badge */}

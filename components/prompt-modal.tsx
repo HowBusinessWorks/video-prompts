@@ -66,6 +66,22 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
     return () => clearTimeout(timer)
   }, [isOpen, prompt.id, viewTracked])
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      } else if (e.key === 'c' && !e.metaKey && !e.ctrlKey) {
+        handleCopy()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
+
   // Don't render until mounted on client
   if (!mounted) {
     return null
@@ -128,11 +144,15 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto border-4 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-0">
+      <DialogContent
+        className="max-w-4xl max-h-[90vh] overflow-y-auto border-4 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-0 animate-in fade-in zoom-in-95 duration-300"
+        aria-describedby="prompt-description"
+      >
         {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 bg-white border-2 border-black rounded-lg p-2 hover:bg-gray-100 transition-colors"
+          aria-label="Close modal (ESC)"
         >
           <X className="h-5 w-5" />
         </button>
@@ -163,7 +183,7 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
         <div className="p-6 bg-white">
           {/* Title */}
           <DialogTitle className="sr-only">{prompt.title}</DialogTitle>
-          <h2 className="text-3xl font-black mb-4">{prompt.title}</h2>
+          <h2 className="text-3xl font-black mb-4" id="prompt-description">{prompt.title}</h2>
 
           {/* Prompt Text */}
           <div className="mb-6">
@@ -174,6 +194,7 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
                   onClick={handleCopy}
                   size="sm"
                   className="bg-black hover:bg-black/80 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                  aria-label="Copy prompt text (C)"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   {copied ? 'Copied!' : 'Copy'}
