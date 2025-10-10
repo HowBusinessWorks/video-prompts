@@ -28,3 +28,8 @@ next-env.d.ts
 
 # claude
 .config/claude
+
+# building process documentation
+/docs/
+PROJECT_OVERVIEW.md
+TOOLS_AND_SERVICES.md
