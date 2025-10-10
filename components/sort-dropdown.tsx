@@ -27,11 +27,8 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
           <SelectItem value="recent" className="font-bold">
             Most Recent
           </SelectItem>
-          <SelectItem value="views" className="font-bold">
+          <SelectItem value="most_viewed" className="font-bold">
             Most Viewed
-          </SelectItem>
-          <SelectItem value="trending" className="font-bold">
-            Trending
           </SelectItem>
         </SelectContent>
       </Select>
