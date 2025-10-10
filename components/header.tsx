@@ -10,10 +10,7 @@ export function Header() {
           <div className="brutalist-card-sm bg-gradient-to-br from-purple-400 to-pink-400 p-2">
             <Sparkles className="h-6 w-6 text-black" />
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-xl font-bold leading-none">AI PROMPTS</h1>
-            <span className="text-xs text-gray-600">Gallery</span>
-          </div>
+          <h1 className="text-xl font-bold leading-none">videoprompts</h1>
         </Link>
 
         {/* Navigation */}
