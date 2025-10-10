@@ -2,10 +2,11 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { X, Copy, Eye, ExternalLink, Image as ImageIcon, Video } from "lucide-react"
+import { X, Copy, Eye, ExternalLink, Image as ImageIcon, Video, Share2, Download } from "lucide-react"
 import Image from "next/image"
 import type { PromptWithTags } from "@/types/database"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { incrementPromptView } from "@/lib/prompts"
 
 interface PromptModalProps {
   prompt: PromptWithTags
@@ -13,13 +14,58 @@ interface PromptModalProps {
   onClose: () => void
 }
 
+// Get or create a session ID for view tracking
+function getSessionId(): string {
+  if (typeof window === 'undefined') return ''
+
+  let sessionId = sessionStorage.getItem('session_id')
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+    sessionStorage.setItem('session_id', sessionId)
+  }
+  return sessionId
+}
+
 export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProps) {
   const [copied, setCopied] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [viewTracked, setViewTracked] = useState(false)
+  const [shareMenuOpen, setShareMenuOpen] = useState(false)
+  const shareMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Close share menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        setShareMenuOpen(false)
+      }
+    }
+
+    if (shareMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [shareMenuOpen])
+
+  // Track view count after 2 seconds of viewing
+  useEffect(() => {
+    if (!isOpen || viewTracked) return
+
+    const timer = setTimeout(async () => {
+      const sessionId = getSessionId()
+      const success = await incrementPromptView(prompt.id, sessionId)
+      if (success) {
+        setViewTracked(true)
+        console.log('View tracked for prompt:', prompt.id)
+      }
+    }, 2000) // Wait 2 seconds before tracking
+
+    return () => clearTimeout(timer)
+  }, [isOpen, prompt.id, viewTracked])
 
   // Don't render until mounted on client
   if (!mounted) {
@@ -34,6 +80,51 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
     await navigator.clipboard.writeText(prompt.prompt_text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleShare = (platform: 'twitter' | 'linkedin' | 'copy') => {
+    const url = `${window.location.origin}/?prompt=${prompt.id}`
+    const text = `Check out this AI prompt: ${prompt.title}`
+
+    switch (platform) {
+      case 'twitter':
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+          '_blank'
+        )
+        break
+      case 'linkedin':
+        window.open(
+          `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+          '_blank'
+        )
+        break
+      case 'copy':
+        navigator.clipboard.writeText(url)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+        break
+    }
+    setShareMenuOpen(false)
+  }
+
+  const handleDownload = async () => {
+    if (!prompt.media_url) return
+
+    try {
+      const response = await fetch(prompt.media_url)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${prompt.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${prompt.media_type === 'video' ? 'mp4' : 'jpg'}`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error downloading file:', error)
+    }
   }
 
   return (
@@ -79,14 +170,56 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-lg font-bold">Prompt</h3>
-              <Button
-                onClick={handleCopy}
-                size="sm"
-                className="bg-black hover:bg-black/80 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                {copied ? 'Copied!' : 'Copy'}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleCopy}
+                  size="sm"
+                  className="bg-black hover:bg-black/80 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  {copied ? 'Copied!' : 'Copy'}
+                </Button>
+                <div className="relative" ref={shareMenuRef}>
+                  <Button
+                    onClick={() => setShareMenuOpen(!shareMenuOpen)}
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                  {shareMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 bg-white border-4 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 z-50 min-w-[150px]">
+                      <button
+                        onClick={() => handleShare('twitter')}
+                        className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded font-bold text-sm"
+                      >
+                        Twitter
+                      </button>
+                      <button
+                        onClick={() => handleShare('linkedin')}
+                        className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded font-bold text-sm"
+                      >
+                        LinkedIn
+                      </button>
+                      <button
+                        onClick={() => handleShare('copy')}
+                        className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded font-bold text-sm"
+                      >
+                        Copy Link
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <Button
+                  onClick={handleDownload}
+                  size="sm"
+                  className="bg-green-500 hover:bg-green-600 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              </div>
             </div>
             <div className="p-4 bg-gray-50 border-2 border-black rounded-lg font-mono text-sm whitespace-pre-wrap">
               {prompt.prompt_text}
