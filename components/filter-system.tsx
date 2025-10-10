@@ -90,6 +90,8 @@ export default function FilterSystem({
         <DropdownMenuContent
           className="w-56 border-4 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white"
           align="start"
+          side="bottom"
+          sideOffset={5}
         >
           <DropdownMenuLabel className="font-bold">Select AI Models</DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-black h-[2px]" />
@@ -130,6 +132,8 @@ export default function FilterSystem({
         <DropdownMenuContent
           className="w-56 border-4 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white"
           align="start"
+          side="bottom"
+          sideOffset={5}
         >
           <DropdownMenuLabel className="font-bold">Select Categories</DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-black h-[2px]" />

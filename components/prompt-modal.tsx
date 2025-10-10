@@ -145,7 +145,7 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-4xl max-h-[90vh] overflow-y-auto border-4 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-0 animate-in fade-in zoom-in-95 duration-300"
+        className="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto border-4 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-0 animate-in fade-in zoom-in-95 duration-300"
         aria-describedby="prompt-description"
       >
         {/* Close button */}
@@ -158,7 +158,7 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
         </button>
 
         {/* Media Section */}
-        <div className="relative w-full h-[400px] bg-gradient-to-br from-purple-500 to-blue-500">
+        <div className="relative w-full h-[250px] sm:h-[350px] lg:h-[400px] bg-gradient-to-br from-purple-500 to-blue-500">
           {prompt.media_url && (
             <Image
               src={prompt.media_url}
@@ -180,24 +180,24 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
         </div>
 
         {/* Content Section */}
-        <div className="p-6 bg-white">
+        <div className="p-4 sm:p-6 bg-white">
           {/* Title */}
           <DialogTitle className="sr-only">{prompt.title}</DialogTitle>
-          <h2 className="text-3xl font-black mb-4" id="prompt-description">{prompt.title}</h2>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black mb-4" id="prompt-description">{prompt.title}</h2>
 
           {/* Prompt Text */}
           <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <h3 className="text-lg font-bold">Prompt</h3>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={handleCopy}
                   size="sm"
                   className="bg-black hover:bg-black/80 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   aria-label="Copy prompt text (C)"
                 >
-                  <Copy className="h-4 w-4 mr-2" />
-                  {copied ? 'Copied!' : 'Copy'}
+                  <Copy className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
                 </Button>
                 <div className="relative" ref={shareMenuRef}>
                   <Button
@@ -205,11 +205,11 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
                     size="sm"
                     className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share
+                    <Share2 className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Share</span>
                   </Button>
                   {shareMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 bg-white border-4 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 z-50 min-w-[150px]">
+                    <div className="absolute right-0 sm:right-0 left-0 sm:left-auto top-full mt-2 bg-white border-4 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 z-50 min-w-[150px]">
                       <button
                         onClick={() => handleShare('twitter')}
                         className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded font-bold text-sm"
@@ -236,8 +236,8 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
                   size="sm"
                   className="bg-green-500 hover:bg-green-600 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                 >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
+                  <Download className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Download</span>
                 </Button>
               </div>
             </div>
