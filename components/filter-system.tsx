@@ -48,7 +48,7 @@ export default function FilterSystem({
         size="sm"
         onClick={() => onMediaTypeChange(mediaType === "image" ? null : "image")}
         className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
-          mediaType === "image" ? "bg-blue-500 text-white" : ""
+          mediaType === "image" ? "!bg-green-500 !text-white hover:!bg-green-600" : "bg-white"
         }`}
       >
         <Image className="h-4 w-4 mr-1" />
@@ -59,7 +59,7 @@ export default function FilterSystem({
         size="sm"
         onClick={() => onMediaTypeChange(mediaType === "video" ? null : "video")}
         className={`rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all ${
-          mediaType === "video" ? "bg-purple-500 text-white" : ""
+          mediaType === "video" ? "!bg-blue-500 !text-white hover:!bg-blue-600" : "bg-white"
         }`}
       >
         <Video className="h-4 w-4 mr-1" />
