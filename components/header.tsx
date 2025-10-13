@@ -15,12 +15,6 @@ export function Header() {
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href="/"
-            className="text-sm font-bold hover:opacity-70 transition-opacity"
-          >
-            Browse
-          </Link>
           <a
             href={process.env.NEXT_PUBLIC_TALLY_FORM_URL || '#'}
             target="_blank"

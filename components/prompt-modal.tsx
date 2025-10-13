@@ -199,38 +199,6 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
                   <Copy className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
                 </Button>
-                <div className="relative" ref={shareMenuRef}>
-                  <Button
-                    onClick={() => setShareMenuOpen(!shareMenuOpen)}
-                    size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg border-2 border-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                  >
-                    <Share2 className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Share</span>
-                  </Button>
-                  {shareMenuOpen && (
-                    <div className="absolute right-0 sm:right-0 left-0 sm:left-auto top-full mt-2 bg-white border-4 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 z-50 min-w-[150px]">
-                      <button
-                        onClick={() => handleShare('twitter')}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded font-bold text-sm"
-                      >
-                        Twitter
-                      </button>
-                      <button
-                        onClick={() => handleShare('linkedin')}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded font-bold text-sm"
-                      >
-                        LinkedIn
-                      </button>
-                      <button
-                        onClick={() => handleShare('copy')}
-                        className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded font-bold text-sm"
-                      >
-                        Copy Link
-                      </button>
-                    </div>
-                  )}
-                </div>
                 <Button
                   onClick={handleDownload}
                   size="sm"
