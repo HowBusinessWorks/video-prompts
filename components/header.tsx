@@ -14,21 +14,17 @@ export function Header() {
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="flex items-center gap-6">
           <a
             href={process.env.NEXT_PUBLIC_TALLY_FORM_URL || '#'}
             target="_blank"
             rel="noopener noreferrer"
-            className="brutalist-button bg-gradient-to-br from-yellow-300 to-orange-400 px-4 py-2 text-sm"
+            className="brutalist-button bg-gradient-to-br from-yellow-300 to-orange-400 px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm"
           >
-            Contribute Prompt
+            <span className="hidden sm:inline">Contribute Prompt</span>
+            <span className="sm:hidden">Contribute</span>
           </a>
         </nav>
-
-        {/* Mobile menu button */}
-        <button className="md:hidden brutalist-button bg-gray-100 px-3 py-2">
-          Menu
-        </button>
       </div>
     </header>
   )
