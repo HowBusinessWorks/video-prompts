@@ -14,17 +14,6 @@ export default function HomePage() {
           <PromptGallery />
         </Suspense>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t-4 border-black bg-white/90 backdrop-blur-md mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              © 2025 videoprompts. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
