@@ -14,12 +14,6 @@ interface PromptCardProps {
 export default function PromptCard({ prompt }: PromptCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Determine gradient color based on media type
-  const gradientColor =
-    prompt.media_type === "video"
-      ? "bg-gradient-to-br from-blue-500 to-purple-500"
-      : "bg-gradient-to-br from-green-500 to-teal-500"
-
   // Get model and category tags
   const modelTag = prompt.tags.find(tag => tag.type === 'model')
   const categoryTags = prompt.tags.filter(tag => tag.type === 'category')
@@ -30,18 +24,22 @@ export default function PromptCard({ prompt }: PromptCardProps) {
         onClick={() => setIsModalOpen(true)}
         className="group border-4 border-black rounded-xl overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 ease-out h-full flex flex-col animate-in fade-in slide-in-from-bottom-4"
       >
-        {/* Thumbnail with gradient overlay */}
-        <div className={`relative h-48 ${gradientColor} overflow-hidden`}>
+        {/* Thumbnail */}
+        <div className="relative h-64 bg-gray-100 overflow-hidden">
           {prompt.thumbnail_url && (
             <Image
               src={prompt.thumbnail_url}
               alt={prompt.title}
               fill
-              className="object-cover mix-blend-overlay opacity-80 group-hover:scale-110 transition-transform duration-500 ease-out"
+              className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
             />
           )}
           {/* Media type badge */}
-          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm border-2 border-black rounded-lg px-2 py-1 flex items-center gap-1">
+          <div className={`absolute top-3 right-3 backdrop-blur-sm border-2 border-black rounded-lg px-2 py-1 flex items-center gap-1 ${
+            prompt.media_type === "video"
+              ? "bg-blue-500 text-white"
+              : "bg-green-500 text-white"
+          }`}>
             {prompt.media_type === "video" ? (
               <Video className="h-4 w-4" />
             ) : (
@@ -54,10 +52,7 @@ export default function PromptCard({ prompt }: PromptCardProps) {
         {/* Content section */}
         <div className="p-4 bg-white flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="text-lg font-bold mb-2 line-clamp-2">{prompt.title}</h3>
-
-          {/* Prompt text preview */}
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2 flex-1">{prompt.prompt_text}</p>
+          <h3 className="text-lg font-bold mb-3 line-clamp-2">{prompt.title}</h3>
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-3">
