@@ -2,10 +2,10 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { X, Copy, Eye, ExternalLink, Image as ImageIcon, Video, Share2, Download } from "lucide-react"
+import { X, Copy, Eye, ExternalLink, Image as ImageIcon, Video, Download } from "lucide-react"
 import Image from "next/image"
 import type { PromptWithTags } from "@/types/database"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { incrementPromptView } from "@/lib/prompts"
 
 interface PromptModalProps {
@@ -30,26 +30,10 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
   const [copied, setCopied] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [viewTracked, setViewTracked] = useState(false)
-  const [shareMenuOpen, setShareMenuOpen] = useState(false)
-  const shareMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  // Close share menu when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
-        setShareMenuOpen(false)
-      }
-    }
-
-    if (shareMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [shareMenuOpen])
 
   // Track view count after 2 seconds of viewing
   useEffect(() => {
@@ -95,32 +79,6 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
     await navigator.clipboard.writeText(prompt.prompt_text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-  }
-
-  const handleShare = (platform: 'twitter' | 'linkedin' | 'copy') => {
-    const url = `${window.location.origin}/?prompt=${prompt.id}`
-    const text = `Check out this AI prompt: ${prompt.title}`
-
-    switch (platform) {
-      case 'twitter':
-        window.open(
-          `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
-          '_blank'
-        )
-        break
-      case 'linkedin':
-        window.open(
-          `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-          '_blank'
-        )
-        break
-      case 'copy':
-        navigator.clipboard.writeText(url)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-        break
-    }
-    setShareMenuOpen(false)
   }
 
   const handleDownload = async () => {
