@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useFilters } from '@/hooks/use-filters'
+import { useDebounce } from '@/hooks/use-debounce'
 import { getPrompts, getTags } from '@/lib/prompts'
 import type { PromptWithTags, Tag } from '@/types/database'
 import PromptCard from './prompt-card'
@@ -17,18 +18,21 @@ export default function PromptGallery() {
   const [availableCategories, setAvailableCategories] = useState<Tag[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Debounce search to reduce API calls
+  const debouncedSearch = useDebounce(filters.search, 500)
+
   const fetchPrompts = useCallback(async () => {
     setLoading(true)
     try {
       console.log('Fetching prompts with filters:', {
-        search: filters.search || undefined,
+        search: debouncedSearch || undefined,
         mediaType: filters.mediaType || undefined,
         modelSlugs: filters.models.length ? filters.models : undefined,
         categorySlugs: filters.categories.length ? filters.categories : undefined,
         sort: filters.sort,
       })
       const result = await getPrompts({
-        search: filters.search || undefined,
+        search: debouncedSearch || undefined,
         mediaType: filters.mediaType || undefined,
         modelSlugs: filters.models.length ? filters.models : undefined,
         categorySlugs: filters.categories.length ? filters.categories : undefined,
@@ -41,7 +45,7 @@ export default function PromptGallery() {
     } finally {
       setLoading(false)
     }
-  }, [filters.search, filters.mediaType, filters.models.join(','), filters.categories.join(','), filters.sort])
+  }, [debouncedSearch, filters.mediaType, filters.models.join(','), filters.categories.join(','), filters.sort])
 
   // Fetch tags on mount
   useEffect(() => {
@@ -98,8 +102,12 @@ export default function PromptGallery() {
         </div>
       ) : prompts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {prompts.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} />
+          {prompts.map((prompt, index) => (
+            <PromptCard
+              key={prompt.id}
+              prompt={prompt}
+              priority={index < 3}
+            />
           ))}
         </div>
       ) : (

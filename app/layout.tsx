@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'AI Prompts Gallery',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image',
         width: 1200,
         height: 630,
         alt: 'AI Prompts Gallery - Curated AI Generation Prompts',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'AI Prompts Gallery - Discover Quality AI Generation Prompts',
     description: 'Browse and discover curated AI prompts for image and video generation.',
-    images: ['/og-image.jpg'],
+    images: ['/og-image'],
     creator: '@videoprompts',
   },
   robots: {

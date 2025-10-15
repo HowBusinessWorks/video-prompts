@@ -4,19 +4,28 @@ import { Card } from "@/components/ui/card"
 import { Eye, Image as ImageIcon, Video } from "lucide-react"
 import Image from "next/image"
 import type { PromptWithTags } from "@/types/database"
-import { useState } from "react"
-import PromptModal from "./prompt-modal"
+import { useState, memo, useMemo, lazy, Suspense } from "react"
+
+// Lazy load modal for better performance
+const PromptModal = lazy(() => import("./prompt-modal"))
 
 interface PromptCardProps {
   prompt: PromptWithTags
+  priority?: boolean
 }
 
-export default function PromptCard({ prompt }: PromptCardProps) {
+function PromptCard({ prompt, priority = false }: PromptCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Get model and category tags
-  const modelTag = prompt.tags.find(tag => tag.type === 'model')
-  const categoryTags = prompt.tags.filter(tag => tag.type === 'category')
+  // Memoize computed values
+  const modelTag = useMemo(
+    () => prompt.tags.find(tag => tag.type === 'model'),
+    [prompt.tags]
+  )
+  const categoryTags = useMemo(
+    () => prompt.tags.filter(tag => tag.type === 'category'),
+    [prompt.tags]
+  )
 
   return (
     <>
@@ -32,6 +41,8 @@ export default function PromptCard({ prompt }: PromptCardProps) {
               alt={prompt.title}
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+              priority={priority}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           )}
           {/* Media type badge */}
@@ -88,11 +99,18 @@ export default function PromptCard({ prompt }: PromptCardProps) {
         </div>
       </Card>
 
-      <PromptModal
-        prompt={prompt}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <PromptModal
+            prompt={prompt}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
+        </Suspense>
+      )}
     </>
   )
 }
+
+// Export memoized version to prevent unnecessary re-renders
+export default memo(PromptCard)
