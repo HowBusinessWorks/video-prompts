@@ -125,7 +125,6 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
                   controls
                   className="w-full h-full object-contain"
                   preload="metadata"
-                  poster={prompt.thumbnail_url || undefined}
                 >
                   Your browser does not support the video tag.
                 </video>

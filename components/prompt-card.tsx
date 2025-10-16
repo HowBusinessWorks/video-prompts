@@ -4,10 +4,8 @@ import { Card } from "@/components/ui/card"
 import { Eye, Image as ImageIcon, Video } from "lucide-react"
 import Image from "next/image"
 import type { PromptWithTags } from "@/types/database"
-import { useState, memo, useMemo, lazy, Suspense } from "react"
-
-// Lazy load modal for better performance
-const PromptModal = lazy(() => import("./prompt-modal"))
+import { useState, useMemo } from "react"
+import PromptModal from "./prompt-modal"
 
 interface PromptCardProps {
   prompt: PromptWithTags
@@ -16,6 +14,12 @@ interface PromptCardProps {
 
 function PromptCard({ prompt, priority = false }: PromptCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Use thumbnail_url if available, otherwise fallback to media_url
+  // Handle null, undefined, and empty string cases
+  const thumbnailUrl = (prompt.thumbnail_url && prompt.thumbnail_url.trim())
+    ? prompt.thumbnail_url
+    : prompt.media_url
 
   // Memoize computed values
   const modelTag = useMemo(
@@ -35,15 +39,29 @@ function PromptCard({ prompt, priority = false }: PromptCardProps) {
       >
         {/* Thumbnail */}
         <div className="relative h-64 bg-gray-100 overflow-hidden">
-          {prompt.thumbnail_url && (
-            <Image
-              src={prompt.thumbnail_url}
-              alt={prompt.title}
-              fill
-              className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
-              priority={priority}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
+          {thumbnailUrl && (
+            <>
+              {prompt.media_type === 'video' && !prompt.thumbnail_url ? (
+                // For videos WITHOUT custom thumbnail, show video element (displays first frame)
+                <video
+                  src={thumbnailUrl}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                  muted
+                  playsInline
+                  preload="metadata"
+                />
+              ) : (
+                // For images OR videos with custom thumbnail, use Next.js Image component
+                <Image
+                  src={thumbnailUrl}
+                  alt={prompt.title}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                  priority={priority}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              )}
+            </>
           )}
           {/* Media type badge */}
           <div className={`absolute top-3 right-3 backdrop-blur-sm border-2 border-black rounded-lg px-2 py-1 flex items-center gap-1 ${
@@ -99,18 +117,13 @@ function PromptCard({ prompt, priority = false }: PromptCardProps) {
         </div>
       </Card>
 
-      {isModalOpen && (
-        <Suspense fallback={null}>
-          <PromptModal
-            prompt={prompt}
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
-        </Suspense>
-      )}
+      <PromptModal
+        prompt={prompt}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   )
 }
 
-// Export memoized version to prevent unnecessary re-renders
-export default memo(PromptCard)
+export default PromptCard

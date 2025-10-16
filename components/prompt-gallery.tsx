@@ -24,13 +24,6 @@ export default function PromptGallery() {
   const fetchPrompts = useCallback(async () => {
     setLoading(true)
     try {
-      console.log('Fetching prompts with filters:', {
-        search: debouncedSearch || undefined,
-        mediaType: filters.mediaType || undefined,
-        modelSlugs: filters.models.length ? filters.models : undefined,
-        categorySlugs: filters.categories.length ? filters.categories : undefined,
-        sort: filters.sort,
-      })
       const result = await getPrompts({
         search: debouncedSearch || undefined,
         mediaType: filters.mediaType || undefined,
@@ -38,7 +31,6 @@ export default function PromptGallery() {
         categorySlugs: filters.categories.length ? filters.categories : undefined,
         sort: filters.sort,
       })
-      console.log('Fetched prompts:', result)
       setPrompts(result.prompts)
     } catch (error) {
       console.error('Error fetching prompts:', error)
