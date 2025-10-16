@@ -118,13 +118,27 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
         {/* Media Section */}
         <div className="relative w-full h-[250px] sm:h-[350px] lg:h-[400px] bg-gradient-to-br from-purple-500 to-blue-500">
           {prompt.media_url && (
-            <Image
-              src={prompt.media_url}
-              alt={prompt.title}
-              fill
-              className="object-contain"
-              priority
-            />
+            <>
+              {prompt.media_type === "video" ? (
+                <video
+                  src={prompt.media_url}
+                  controls
+                  className="w-full h-full object-contain"
+                  preload="metadata"
+                  poster={prompt.thumbnail_url || undefined}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <Image
+                  src={prompt.media_url}
+                  alt={prompt.title}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              )}
+            </>
           )}
           {/* Media type badge */}
           <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm border-2 border-black rounded-lg px-3 py-2 flex items-center gap-2">
